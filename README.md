@@ -1,0 +1,1 @@
+# custom-dictionary-manager
