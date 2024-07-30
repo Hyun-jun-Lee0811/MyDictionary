@@ -4,8 +4,8 @@
 # 프로젝트 설계
 
 **1. 단어 검색**
-- **기능 설명**: 검색어를 입력하면 Wordnik API를 사용하여 해당 단어를 검색할 수 있습니다. 검색은 대소문자를 구분하지 않으며, 로그인하지 않더라도 검색이 가능합니다.
-- **기술**: 단어 검색 결과는 ElasticSearch와 Redis를 활용하여 캐싱합니다.
+- **기능 설명**: 검색어를 입력하면 Wordnik API를 사용하여 해당 단어를 검색할 수 있습니다. 검색은 대소문자를 구분하지 않습니다.
+- **기술**: 단어 검색은 ElasticSearch를 활용하여 빠르게 처리하고, trie 데이터 구조를 활용합니다.
 - **사용할 API:**
   - GET /word.json/{word}/definitions: 단어의 정의를 반환합니다.
   - GET /word.json/{word}/examples: 단어의 사용 예를 반환합니다.
@@ -20,7 +20,6 @@
 
 **3. 자신의 생각 저장**
 - 단어를 선택하고 자신의 생각을 작성하여 저장할 수 있습니다.
-- 다음에 해당 단어를 검색하면 저장한 내용이 함께 나타납니다.
 
 **4. 단어장 관리**
 - 각 사용자는 자신의 단어장 단어를 저장할 수 있습니다.
@@ -47,7 +46,8 @@
   - 동기화 작업 후 Redis 키는 자동으로 삭제되므로, 방문자 수는 초기화됩니다.
 
 # ERD
-![image](https://github.com/user-attachments/assets/0372c7be-fac0-400f-a72a-cc9d159d27d2)
+![image](https://github.com/user-attachments/assets/f201a69f-87da-4919-baf1-45fae76c7189)
+
 
 # 기술 스택
 <img src="https://img.shields.io/badge/java-007396?style=for-the-badge&logo=java&logoColor=white"><img src="https://img.shields.io/badge/spring-6DB33F?style=for-the-badge&logo=spring&logoColor=white"><img src="https://img.shields.io/badge/mariaDB-003545?style=for-the-badge&logo=mariaDB&logoColor=white">![Redis](https://img.shields.io/badge/redis-%23DD0031.svg?style=for-the-badge&logo=redis&logoColor=white)![AWS](https://img.shields.io/badge/AWS-%23FF9900.svg?style=for-the-badge&logo=amazon-aws&logoColor=white)![ElasticSearch](https://img.shields.io/badge/-ElasticSearch-005571?style=for-the-badge&logo=elasticsearch)<img src="https://img.shields.io/badge/Wordnik-0066FF?style=for-the-badge&logo=wordnik&logoColor=white">
