@@ -47,6 +47,7 @@
   - 동기화 작업 후 Redis 키는 자동으로 삭제되므로, 방문자 수는 초기화됩니다.
 
 # ERD
+![image](https://github.com/user-attachments/assets/0372c7be-fac0-400f-a72a-cc9d159d27d2)
 
 # 기술 스택
 <img src="https://img.shields.io/badge/java-007396?style=for-the-badge&logo=java&logoColor=white"><img src="https://img.shields.io/badge/spring-6DB33F?style=for-the-badge&logo=spring&logoColor=white"><img src="https://img.shields.io/badge/mariaDB-003545?style=for-the-badge&logo=mariaDB&logoColor=white">![Redis](https://img.shields.io/badge/redis-%23DD0031.svg?style=for-the-badge&logo=redis&logoColor=white)![AWS](https://img.shields.io/badge/AWS-%23FF9900.svg?style=for-the-badge&logo=amazon-aws&logoColor=white)![ElasticSearch](https://img.shields.io/badge/-ElasticSearch-005571?style=for-the-badge&logo=elasticsearch)<img src="https://img.shields.io/badge/Wordnik-0066FF?style=for-the-badge&logo=wordnik&logoColor=white">
