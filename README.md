@@ -50,8 +50,65 @@
   - 동기화 작업 후 Redis 키는 자동으로 삭제되므로, 방문자 수는 초기화됩니다.
 
 # ERD
-![image](https://github.com/user-attachments/assets/f201a69f-87da-4919-baf1-45fae76c7189)
+![image](https://github.com/user-attachments/assets/08ba1e40-5636-4963-b9de-efa23cb02aac)
 
 
+# ElasticSearch 문서구조
+
+- **definitions**
+```json
+{
+  "api_word_id": "string",
+  "word": "string",
+  "part_of_speech": "string",
+  "attribution_text": "string",
+  "source_dictionary": "string",
+  "sequence": "integer",
+  "score": "integer",
+  "attribution_url": "string",
+  "wordnik_url": "string"
+}
+```
+- **examples**
+```json
+{
+  "api_word_id": "string",
+  "provider_id": "integer",
+  "year": "integer",
+  "rating": "integer",
+  "url": "string",
+  "text": "string",
+  "document_id": "integer",
+  "title": "string",
+  "author": "string"
+}
+```
+- **related_words**
+```json
+{
+  "api_word_id": "string",
+  "relationship_type": "string",
+  "related_word": "string"
+}
+```
+- **pronunciations**
+```json
+{
+  "api_word_id": "string",
+  "seq": "integer",
+  "raw": "string",
+  "raw_type": "string",
+  "attribution_text": "string",
+  "attribution_url": "string"
+}
+```
+- **etymologies**
+```json
+{
+  "api_word_id": "string",
+  "etymology_text": "string",
+  "use_canonical": "string"
+}
+```
 # 기술 스택
 <img src="https://img.shields.io/badge/java-007396?style=for-the-badge&logo=java&logoColor=white"><img src="https://img.shields.io/badge/spring-6DB33F?style=for-the-badge&logo=spring&logoColor=white"><img src="https://img.shields.io/badge/mariaDB-003545?style=for-the-badge&logo=mariaDB&logoColor=white">![Redis](https://img.shields.io/badge/redis-%23DD0031.svg?style=for-the-badge&logo=redis&logoColor=white)![AWS](https://img.shields.io/badge/AWS-%23FF9900.svg?style=for-the-badge&logo=amazon-aws&logoColor=white)![ElasticSearch](https://img.shields.io/badge/-ElasticSearch-005571?style=for-the-badge&logo=elasticsearch)<img src="https://img.shields.io/badge/Wordnik-0066FF?style=for-the-badge&logo=wordnik&logoColor=white">
