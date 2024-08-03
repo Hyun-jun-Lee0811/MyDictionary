@@ -3,6 +3,7 @@ package com.github.Hyun_jun_Lee0811.dictionary.controller;
 import com.github.Hyun_jun_Lee0811.dictionary.model.UserForm;
 import com.github.Hyun_jun_Lee0811.dictionary.security.JwtTokenProvider;
 import com.github.Hyun_jun_Lee0811.dictionary.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -21,28 +22,28 @@ public class UserController {
   private final JwtTokenProvider jwtTokenProvider;
 
   @PostMapping("/sign-up")
-  public ResponseEntity<?> signUp(@RequestBody UserForm.SignUp request) {
+  public ResponseEntity<?> signUp(@Valid @RequestBody UserForm.SignUp request) {
     return ResponseEntity.ok(userService.singUp(request));
   }
 
   @PostMapping("/sign-in")
-  public ResponseEntity<?> signIn(@RequestBody UserForm.SignIn request) {
+  public ResponseEntity<?> signIn(@Valid @RequestBody UserForm.SignIn request) {
     var user = userService.singIn(request);
     return ResponseEntity.ok(this.jwtTokenProvider.generateToken(user.getUsername()));
   }
 
   @PutMapping("/change-username")
-  public ResponseEntity<?> changeUsername(@RequestBody UserForm.ChangeUsername request) {
+  public ResponseEntity<?> changeUsername(@Valid @RequestBody UserForm.ChangeUsername request) {
     return ResponseEntity.ok(userService.changeUsername(request));
   }
 
   @PutMapping("/change-password")
-  public ResponseEntity<?> changePassword(@RequestBody UserForm.ChangePassword request) {
+  public ResponseEntity<?> changePassword(@Valid @RequestBody UserForm.ChangePassword request) {
     return ResponseEntity.ok(userService.changePassword(request));
   }
 
   @DeleteMapping("/delete-account")
-  public void deleteAccount(@RequestBody UserForm.DeleteAccount request) {
+  public void deleteAccount(@Valid @RequestBody UserForm.DeleteAccount request) {
     userService.deleteAccount(request);
   }
 }
