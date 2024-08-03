@@ -51,7 +51,8 @@
   - 동기화 작업 후 Redis 키는 자동으로 삭제되므로, 방문자 수는 초기화됩니다.
 
 # ERD
-![image](https://github.com/user-attachments/assets/94a3a61b-06f4-496b-8454-cdc33b9f5e00)
+![image](https://github.com/user-attachments/assets/1fb9a9cb-a59e-479d-a3c3-518c8d9eb2b1)
+
 
 
 
