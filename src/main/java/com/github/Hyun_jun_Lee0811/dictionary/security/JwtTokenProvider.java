@@ -2,6 +2,7 @@ package com.github.Hyun_jun_Lee0811.dictionary.security;
 
 import static com.github.Hyun_jun_Lee0811.dictionary.type.ErrorCode.*;
 
+import com.github.Hyun_jun_Lee0811.dictionary.model.dto.UserDto;
 import com.github.Hyun_jun_Lee0811.dictionary.service.UserService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -19,7 +20,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -29,13 +29,12 @@ public class JwtTokenProvider {
 
   private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 30;
   private final SecretKey secretKey;
+  private final UserService userService;
 
   @Autowired
-  private UserService userService;
-
-  @Autowired
-  public JwtTokenProvider(@Value("${jwt.secret.Key}") String secretKey) {
+  public JwtTokenProvider(@Value("${jwt.secret.Key}") String secretKey, UserService userService) {
     this.secretKey = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
+    this.userService = userService;
   }
 
   public String generateToken(String username) {
@@ -50,8 +49,8 @@ public class JwtTokenProvider {
   }
 
   public Authentication getAuthentication(String token) {
-    UserDetails userDetails = this.userService.loadUserByUsername(this.getUsername(token));
-    return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
+    UserDto userDto = this.userService.getUserDtoByUsername(this.getUsername(token));
+    return new UsernamePasswordAuthenticationToken(userDto, "", null);
   }
 
   public String getUsername(String token) {

@@ -11,50 +11,50 @@ import com.github.Hyun_jun_Lee0811.dictionary.model.UserForm;
 import com.github.Hyun_jun_Lee0811.dictionary.model.UserForm.ChangePassword;
 import com.github.Hyun_jun_Lee0811.dictionary.model.UserForm.ChangeUsername;
 import com.github.Hyun_jun_Lee0811.dictionary.model.UserForm.DeleteAccount;
+import com.github.Hyun_jun_Lee0811.dictionary.model.dto.UserDto;
 import com.github.Hyun_jun_Lee0811.dictionary.model.entity.User;
 import com.github.Hyun_jun_Lee0811.dictionary.repository.UserRepository;
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 @AllArgsConstructor
-public class UserService implements UserDetailsService {
+public class UserService {
 
   private final UserRepository userRepository;
   private final PasswordEncoder passwordEncoder;
 
-  @Override
-  public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-    return userRepository.findByUsername(username).orElseThrow(
-        () -> new ErrorResponse(USER_NOT_EXIT, username)
-    );
+  public UserDto getUserDtoByUsername(String username) {
+    User user = this.userRepository.findByUsername(username)
+        .orElseThrow(() -> new ErrorResponse(USER_NOT_EXIT));
+    return new UserDto(user.getUserId(), user.getUsername(), user.getPassword());
   }
 
-  public User singUp(UserForm.SignUp request) {
+  public UserDto signUp(UserForm.SignUp request) {
     if (this.userRepository.existsByUsername(request.getUsername())) {
       throw new ErrorResponse(USER_NAME_ALREADY_EXIT);
     }
+
     request.setPassword(this.passwordEncoder.encode(request.getPassword()));
-    return this.userRepository.save(request.toEntity());
+    User user = this.userRepository.save(request.toEntity());
+
+    return new UserDto(user.getUserId(), user.getUsername(), user.getPassword());
   }
 
-  public User singIn(UserForm.SignIn request) {
-    var getUser = getUserByUsername(request.getUsername());
-
-    if (!this.passwordEncoder.matches(request.getPassword(), getUser.getPassword())) {
+  public UserDto signIn(UserForm.SignIn request) {
+    User user = getUserByUsername(request.getUsername());
+    if (!this.passwordEncoder.matches(request.getPassword(), user.getPassword())) {
       throw new ErrorResponse(PASSWORD_UN_MATCH);
     }
-
-    return getUser;
+    return new UserDto(user.getUserId(), user.getUsername(), user.getPassword());
   }
 
-  public User changeUsername(ChangeUsername request) {
+  public UserDto changeUsername(ChangeUsername request) {
     //1. 현재 사용자 ID로 사용자 조회
     User user = getUserById(getCurrentUserId());
 
@@ -65,10 +65,11 @@ public class UserService implements UserDetailsService {
 
     //3. 사용자 이름 변경
     user.setUsername(request.getNewUsername());
-    return this.userRepository.save(user);
+    User updatedUser = this.userRepository.save(user);
+    return new UserDto(updatedUser.getUserId(), updatedUser.getUsername(), updatedUser.getPassword());
   }
 
-  public User changePassword(ChangePassword request) {
+  public UserDto changePassword(ChangePassword request) {
     //1. 사용자 조회
     User user = getUserByUsername(request.getUsername());
 
@@ -77,7 +78,9 @@ public class UserService implements UserDetailsService {
 
     //3. 비밀번호 변경
     user.setPassword(passwordEncoder.encode(request.getNewPassword()));
-    return this.userRepository.save(user);
+
+    User updatedUser = this.userRepository.save(user);
+    return new UserDto(updatedUser.getUserId(), updatedUser.getUsername(), updatedUser.getPassword());
   }
 
   public void deleteAccount(DeleteAccount request) {
@@ -90,12 +93,13 @@ public class UserService implements UserDetailsService {
     }
 
     //3. 계정 삭제
+    user.setDeletedAt(LocalDateTime.now());
     this.userRepository.delete(user);
   }
 
   private Long getCurrentUserId() {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    if (authentication == null || !(authentication.getPrincipal() instanceof UserDetails)) {
+    if (authentication == null || !(authentication.getPrincipal() instanceof User)) {
       throw new ErrorResponse(UNABLE_TO_GET_CURRENT_USER_ID);
     }
 
