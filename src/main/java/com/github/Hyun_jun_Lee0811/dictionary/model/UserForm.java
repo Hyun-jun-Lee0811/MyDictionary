@@ -11,7 +11,10 @@ public class UserForm {
   @Data
   public static class SignUp {
 
+    @NotBlank(message = "Username cannot be empty")
     private String username;
+
+    @NotBlank(message = "Password cannot be empty")
     private String password;
 
     public User toEntity() {
@@ -61,6 +64,7 @@ public class UserForm {
 
   @Data
   public static class DeleteAccount {
+
     @NotBlank(message = "Username cannot be empty")
     private String username;
 
