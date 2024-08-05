@@ -1,4 +1,4 @@
-package com.github.Hyun_jun_Lee0811.dictionary;
+package com.github.Hyun_jun_Lee0811.dictionary.service;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -9,7 +9,6 @@ import com.github.Hyun_jun_Lee0811.dictionary.expection.ErrorResponse;
 import com.github.Hyun_jun_Lee0811.dictionary.model.UserForm;
 import com.github.Hyun_jun_Lee0811.dictionary.model.entity.User;
 import com.github.Hyun_jun_Lee0811.dictionary.repository.UserRepository;
-import com.github.Hyun_jun_Lee0811.dictionary.service.UserService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -24,7 +23,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import java.util.Optional;
 import org.springframework.transaction.annotation.Transactional;
 
-@Transactional
 public class UserServiceTest {
 
   @InjectMocks
@@ -167,7 +165,8 @@ public class UserServiceTest {
     // Mock current user
     when(authentication.getPrincipal()).thenReturn(currentUser);
 
-    ErrorResponse exception = assertThrows(ErrorResponse.class, () -> userService.changeUsername(request));
+    ErrorResponse exception = assertThrows(ErrorResponse.class,
+        () -> userService.changeUsername(request));
     assertEquals("Invalid password", exception.getMessage());
   }
 
@@ -210,7 +209,8 @@ public class UserServiceTest {
     when(userRepository.findByUsername(anyString())).thenReturn(Optional.of(user));
     when(passwordEncoder.matches(anyString(), anyString())).thenReturn(false);
 
-    ErrorResponse exception = assertThrows(ErrorResponse.class, () -> userService.changePassword(request));
+    ErrorResponse exception = assertThrows(ErrorResponse.class,
+        () -> userService.changePassword(request));
     assertEquals("Invalid password", exception.getMessage());
   }
 
@@ -247,7 +247,8 @@ public class UserServiceTest {
     when(userRepository.findByUsername(anyString())).thenReturn(Optional.of(user));
     when(passwordEncoder.matches(anyString(), anyString())).thenReturn(false);
 
-    ErrorResponse exception = assertThrows(ErrorResponse.class, () -> userService.deleteAccount(request));
+    ErrorResponse exception = assertThrows(ErrorResponse.class,
+        () -> userService.deleteAccount(request));
     assertEquals("Invalid password", exception.getMessage());
   }
 

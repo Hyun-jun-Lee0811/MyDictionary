@@ -12,7 +12,8 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ErrorResponse extends RuntimeException{
+public class ErrorResponse extends RuntimeException {
+
   private ErrorCode errorCode;
   private String message;
 
