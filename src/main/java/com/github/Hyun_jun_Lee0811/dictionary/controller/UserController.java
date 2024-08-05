@@ -23,13 +23,13 @@ public class UserController {
 
   @PostMapping("/sign-up")
   public ResponseEntity<?> signUp(@Valid @RequestBody UserForm.SignUp request) {
-    return ResponseEntity.ok(userService.singUp(request));
+    return ResponseEntity.ok(userService.signUp(request));
   }
 
   @PostMapping("/sign-in")
   public ResponseEntity<?> signIn(@Valid @RequestBody UserForm.SignIn request) {
-    var user = userService.singIn(request);
-    return ResponseEntity.ok(this.jwtTokenProvider.generateToken(user.getUsername()));
+    String token = this.jwtTokenProvider.generateToken(userService.signIn(request).getUsername());
+    return ResponseEntity.ok(token);
   }
 
   @PutMapping("/change-username")
@@ -42,8 +42,9 @@ public class UserController {
     return ResponseEntity.ok(userService.changePassword(request));
   }
 
-  @DeleteMapping("/delete-account")
-  public void deleteAccount(@Valid @RequestBody UserForm.DeleteAccount request) {
+  @DeleteMapping("/accounts/{username}")
+  public ResponseEntity<?> deleteAccount(@RequestBody UserForm.DeleteAccount request) {
     userService.deleteAccount(request);
+    return ResponseEntity.noContent().build();
   }
 }
