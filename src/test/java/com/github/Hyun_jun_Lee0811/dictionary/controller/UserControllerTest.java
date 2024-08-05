@@ -12,7 +12,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.Hyun_jun_Lee0811.dictionary.expection.ErrorResponse;
 import com.github.Hyun_jun_Lee0811.dictionary.model.UserForm;
-import com.github.Hyun_jun_Lee0811.dictionary.model.entity.User;
+import com.github.Hyun_jun_Lee0811.dictionary.model.dto.UserDto;
 import com.github.Hyun_jun_Lee0811.dictionary.security.JwtTokenProvider;
 import com.github.Hyun_jun_Lee0811.dictionary.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
@@ -52,10 +52,10 @@ class UserControllerTest {
     signUpForm.setUsername("grace");
     signUpForm.setPassword("password");
 
-    User user = new User();
+    UserDto user = new UserDto();
     user.setUsername("grace");
 
-    when(userService.singUp(any(UserForm.SignUp.class))).thenReturn(user);
+    when(userService.signUp(any(UserForm.SignUp.class))).thenReturn(user);
 
     mockMvc.perform(post("/user/sign-up")
             .contentType(MediaType.APPLICATION_JSON)
@@ -81,10 +81,10 @@ class UserControllerTest {
     signInForm.setUsername("grace");
     signInForm.setPassword("password");
 
-    User user = new User();
+    UserDto user = new UserDto();
     user.setUsername("grace");
 
-    when(userService.singIn(any(UserForm.SignIn.class))).thenReturn(user);
+    when(userService.signIn(any(UserForm.SignIn.class))).thenReturn(user);
     when(jwtTokenProvider.generateToken(any(String.class))).thenReturn("token");
 
     mockMvc.perform(post("/user/sign-in")
@@ -99,7 +99,7 @@ class UserControllerTest {
     signInForm.setUsername("grace");
     signInForm.setPassword("wrongPassword");
 
-    when(userService.singIn(any(UserForm.SignIn.class))).thenThrow(
+    when(userService.signIn(any(UserForm.SignIn.class))).thenThrow(
         new ErrorResponse(PASSWORD_UN_MATCH));
 
     mockMvc.perform(post("/user/sign-in")
@@ -115,7 +115,7 @@ class UserControllerTest {
     changeUsernameForm.setPassword("password");
     changeUsernameForm.setNewUsername("john");
 
-    User user = new User();
+    UserDto user = new UserDto();
     user.setUsername("john");
 
     when(userService.changeUsername(any(UserForm.ChangeUsername.class))).thenReturn(user);
@@ -149,7 +149,7 @@ class UserControllerTest {
     changePasswordForm.setOldPassword("password");
     changePasswordForm.setNewPassword("newPassword");
 
-    User user = new User();
+    UserDto user = new UserDto();
     user.setUsername("grace");
 
     when(userService.changePassword(any(UserForm.ChangePassword.class))).thenReturn(user);
@@ -182,10 +182,10 @@ class UserControllerTest {
     deleteAccountForm.setUsername("grace");
     deleteAccountForm.setPassword("password");
 
-    mockMvc.perform(delete("/user/delete-account")
+    mockMvc.perform(delete("/user/accounts/grace")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(deleteAccountForm)))
-        .andExpect(status().isOk());
+        .andExpect(status().isNoContent());
   }
 
   @Test
@@ -197,7 +197,7 @@ class UserControllerTest {
     doThrow(new ErrorResponse(PASSWORD_UN_MATCH)).when(userService)
         .deleteAccount(any(UserForm.DeleteAccount.class));
 
-    mockMvc.perform(delete("/user/delete-account")
+    mockMvc.perform(delete("/user/accounts/grace")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(deleteAccountForm)))
         .andExpect(status().isUnauthorized());

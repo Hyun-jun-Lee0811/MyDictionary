@@ -7,6 +7,7 @@ import static org.mockito.Mockito.*;
 
 import com.github.Hyun_jun_Lee0811.dictionary.expection.ErrorResponse;
 import com.github.Hyun_jun_Lee0811.dictionary.model.UserForm;
+import com.github.Hyun_jun_Lee0811.dictionary.model.dto.UserDto;
 import com.github.Hyun_jun_Lee0811.dictionary.model.entity.User;
 import com.github.Hyun_jun_Lee0811.dictionary.repository.UserRepository;
 import org.junit.jupiter.api.AfterEach;
@@ -21,7 +22,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
-import org.springframework.transaction.annotation.Transactional;
 
 public class UserServiceTest {
 
@@ -60,7 +60,7 @@ public class UserServiceTest {
     when(passwordEncoder.encode(anyString())).thenReturn("encodedPassword");
     when(userRepository.save(any(User.class))).thenReturn(user);
 
-    User result = userService.singUp(request);
+    UserDto result = userService.signUp(request);
 
     assertNotNull(result);
     assertEquals("grace", result.getUsername());
@@ -76,8 +76,8 @@ public class UserServiceTest {
 
     when(userRepository.existsByUsername(anyString())).thenReturn(true);
 
-    ErrorResponse exception = assertThrows(ErrorResponse.class, () -> userService.singUp(request));
-    assertEquals("User already exists", exception.getMessage());
+    ErrorResponse exception = assertThrows(ErrorResponse.class, () -> userService.signUp(request));
+    assertEquals("존재하는 사용자 이름입니다.", exception.getMessage());
   }
 
   @Test
@@ -94,7 +94,7 @@ public class UserServiceTest {
     when(userRepository.findByUsername(anyString())).thenReturn(Optional.of(user));
     when(passwordEncoder.matches(anyString(), anyString())).thenReturn(true);
 
-    User result = userService.singIn(request);
+    UserDto result = userService.signIn(request);
 
     assertNotNull(result);
     assertEquals("grace", result.getUsername());
@@ -114,8 +114,8 @@ public class UserServiceTest {
     when(userRepository.findByUsername(anyString())).thenReturn(Optional.of(user));
     when(passwordEncoder.matches(anyString(), anyString())).thenReturn(false);
 
-    ErrorResponse exception = assertThrows(ErrorResponse.class, () -> userService.singIn(request));
-    assertEquals("Invalid password", exception.getMessage());
+    ErrorResponse exception = assertThrows(ErrorResponse.class, () -> userService.signIn(request));
+    assertEquals("비밀번호가 일치하지 않습니다.", exception.getMessage());
   }
 
   @Test
@@ -139,7 +139,7 @@ public class UserServiceTest {
     // Mock current user
     when(authentication.getPrincipal()).thenReturn(currentUser);
 
-    User result = userService.changeUsername(request);
+    UserDto result = userService.changeUsername(request);
 
     assertNotNull(result);
     assertEquals("newUsername", result.getUsername());
@@ -167,7 +167,7 @@ public class UserServiceTest {
 
     ErrorResponse exception = assertThrows(ErrorResponse.class,
         () -> userService.changeUsername(request));
-    assertEquals("Invalid password", exception.getMessage());
+    assertEquals("비밀번호가 일치하지 않습니다.", exception.getMessage());
   }
 
   @Test
@@ -180,17 +180,17 @@ public class UserServiceTest {
 
     User user = new User();
     user.setUsername("grace");
-    user.setPassword("encodedOldPassword");
+    user.setPassword("OldPassword");
 
     when(userRepository.findByUsername(anyString())).thenReturn(Optional.of(user));
     when(passwordEncoder.matches(anyString(), anyString())).thenReturn(true);
-    when(passwordEncoder.encode(anyString())).thenReturn("encodedNewPassword");
+    when(passwordEncoder.encode(anyString())).thenReturn("OldPassword");
     when(userRepository.save(any(User.class))).thenReturn(user);
 
-    User result = userService.changePassword(request);
+    UserDto result = userService.changePassword(request);
 
     assertNotNull(result);
-    assertEquals("encodedNewPassword", result.getPassword());
+    assertEquals("OldPassword", result.getPassword());
     verify(userRepository).save(any(User.class));
   }
 
@@ -211,7 +211,7 @@ public class UserServiceTest {
 
     ErrorResponse exception = assertThrows(ErrorResponse.class,
         () -> userService.changePassword(request));
-    assertEquals("Invalid password", exception.getMessage());
+    assertEquals("비밀번호가 일치하지 않습니다.", exception.getMessage());
   }
 
   @Test
@@ -249,7 +249,7 @@ public class UserServiceTest {
 
     ErrorResponse exception = assertThrows(ErrorResponse.class,
         () -> userService.deleteAccount(request));
-    assertEquals("Invalid password", exception.getMessage());
+    assertEquals("비밀번호가 일치하지 않습니다.", exception.getMessage());
   }
 
   @AfterEach
