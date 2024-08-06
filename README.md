@@ -53,10 +53,6 @@
 # ERD
 ![image](https://github.com/user-attachments/assets/d272a432-f4a6-4f8b-8e6e-d6dd17b198aa)
 
-
-
-
-
 # ElasticSearch 문서구조
 
 - **definitions**

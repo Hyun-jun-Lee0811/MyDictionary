@@ -7,7 +7,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 class DictionaryApplicationTests {
 
 	@Test
-	void contextLoads() {
+	void success_SignUp() {
 	}
+
+	@Test
+	void fail_SignUp() {
+	}
+
+
 
 }
