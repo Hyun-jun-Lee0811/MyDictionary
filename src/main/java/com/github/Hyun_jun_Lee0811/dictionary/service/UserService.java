@@ -18,7 +18,6 @@ import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -99,11 +98,11 @@ public class UserService {
 
   private Long getCurrentUserId() {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    if (authentication == null || !(authentication.getPrincipal() instanceof User)) {
+    if (authentication == null || !(authentication.getPrincipal() instanceof UserDto)) {
       throw new ErrorResponse(UNABLE_TO_GET_CURRENT_USER_ID);
     }
 
-    return ((User) authentication.getPrincipal()).getUserId();
+    return ((UserDto) authentication.getPrincipal()).getId();
   }
 
   private User getUserByUsername(String username) {
