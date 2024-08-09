@@ -16,32 +16,36 @@ public class WordService {
   private final Trie<String, Boolean> trie;
 
   public List<WordDefinitionDto> getDefinitions(String word) {
-    List<WordDefinitionDto> definitions = wordnikClient.getDefinitions(normalizeWord(word));
+    String normalizedWord = normalizeWord(word);
+    List<WordDefinitionDto> definitions = wordnikClient.getDefinitions(normalizedWord);
     updateTrie(normalizeWord(word));
     return definitions;
   }
 
   public WordExampleDto getExamples(String word) {
-    WordExampleDto examples = wordnikClient.getExamples(normalizeWord(word));
+    String normalizedWord = normalizeWord(word);
+    WordExampleDto examples = wordnikClient.getExamples(normalizedWord);
     updateTrie(normalizeWord(word));
     return examples;
   }
 
   public List<WordRelatedWordDto> getRelatedWords(String word) {
-    List<WordRelatedWordDto> relatedWords = wordnikClient.getRelatedWords(normalizeWord(word));
-    updateTrie(normalizeWord(word));
+    String normalizedWord = normalizeWord(word);
+    List<WordRelatedWordDto> relatedWords = wordnikClient.getRelatedWords(normalizedWord);
+    updateTrie(normalizedWord);
     return relatedWords;
   }
 
   public List<WordPronunciationDto> getPronunciations(String word) {
-    List<WordPronunciationDto> pronunciations = wordnikClient.getPronunciations(
-        normalizeWord(word));
+    String normalizedWord = normalizeWord(word);
+    List<WordPronunciationDto> pronunciations = wordnikClient.getPronunciations(normalizedWord);
     updateTrie(normalizeWord(word));
     return pronunciations;
   }
 
   public List<WordEtymologyDto> getEtymologies(String word) {
-    List<WordEtymologyDto> etymologies = wordnikClient.getEtymologies(normalizeWord(word));
+    String normalizedWord = normalizeWord(word);
+    List<WordEtymologyDto> etymologies = wordnikClient.getEtymologies(normalizedWord);
     updateTrie(normalizeWord(word));
     return etymologies;
   }
