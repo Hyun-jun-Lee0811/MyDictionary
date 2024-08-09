@@ -14,33 +14,33 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/word.json")
+@RequestMapping("/dictionary")
 @RequiredArgsConstructor
 public class WordController {
 
   private final WordService wordService;
 
-  @GetMapping("/{word}/definitions")
+  @GetMapping("/definitions/{word}")
   public List<WordDefinitionDto> getDefinitions(@Valid @PathVariable("word") String word) {
     return wordService.getDefinitions(word);
   }
 
-  @GetMapping("/{word}/examples")
+  @GetMapping("/examples/{word}")
   public WordExampleDto getExamples(@Valid @PathVariable("word") String word) {
     return wordService.getExamples(word);
   }
 
-  @GetMapping("/{word}/relatedWords")
+  @GetMapping("/related-words/{word}")
   public List<WordRelatedWordDto> getRelatedWords(@Valid @PathVariable("word") String word) {
     return wordService.getRelatedWords(word);
   }
 
-  @GetMapping("/{word}/pronunciations")
+  @GetMapping("/pronunciations/{word}")
   public List<WordPronunciationDto> getPronunciations(@Valid @PathVariable("word") String word) {
     return wordService.getPronunciations(word);
   }
 
-  @GetMapping("/{word}/etymologies")
+  @GetMapping("/etymologies/{word}")
   public List<WordEtymologyDto> getEtymologies(@Valid @PathVariable("word") String word) {
     return wordService.getEtymologies(word);
   }
