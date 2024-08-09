@@ -52,8 +52,7 @@ public class WordServiceTest {
 
     when(wordnikClient.getDefinitions(word)).thenReturn(expectedDefinitions);
 
-    List<WordDefinitionDto> definitions = wordService.getDefinitions(word);
-    assertEquals(expectedDefinitions, definitions);
+    assertEquals(expectedDefinitions, wordService.getDefinitions(word));
   }
 
   @Test
@@ -73,8 +72,7 @@ public class WordServiceTest {
 
     when(wordnikClient.getDefinitions(word)).thenReturn(Collections.emptyList());
 
-    List<WordDefinitionDto> definitions = wordService.getDefinitions(word);
-    assertNotEquals(expectedDefinitions, definitions);
+    assertNotEquals(expectedDefinitions, wordService.getDefinitions(word));
   }
 
   @Test
@@ -91,8 +89,7 @@ public class WordServiceTest {
 
     when(wordnikClient.getExamples(word)).thenReturn(example);
 
-    WordExampleDto examples = wordService.getExamples(word);
-    assertEquals(example, examples);
+    assertEquals(example, wordService.getExamples(word));
   }
 
   @Test
@@ -109,8 +106,7 @@ public class WordServiceTest {
 
     when(wordnikClient.getExamples(word)).thenReturn(new WordExampleDto(Collections.emptyList()));
 
-    WordExampleDto examples = wordService.getExamples(word);
-    assertNotEquals(example, examples);
+    assertNotEquals(example, wordService.getExamples(word));
   }
 
   @Test
@@ -123,8 +119,7 @@ public class WordServiceTest {
 
     when(wordnikClient.getRelatedWords(word)).thenReturn(relatedWords);
 
-    List<WordRelatedWordDto> result = wordService.getRelatedWords(word);
-    assertEquals(relatedWords, result);
+    assertEquals(relatedWords, wordService.getRelatedWords(word));
   }
 
   @Test
@@ -137,8 +132,7 @@ public class WordServiceTest {
 
     when(wordnikClient.getRelatedWords(word)).thenReturn(Collections.emptyList());
 
-    List<WordRelatedWordDto> result = wordService.getRelatedWords(word);
-    assertNotEquals(relatedWords, result);
+    assertNotEquals(relatedWords, wordService.getRelatedWords(word));
   }
 
   @Test
@@ -152,8 +146,7 @@ public class WordServiceTest {
 
     when(wordnikClient.getPronunciations(word)).thenReturn(pronunciations);
 
-    List<WordPronunciationDto> result = wordService.getPronunciations(word);
-    assertEquals(pronunciations, result);
+    assertEquals(pronunciations, wordService.getPronunciations(word));
   }
 
   @Test
@@ -170,8 +163,7 @@ public class WordServiceTest {
             "")
     ));
 
-    List<WordPronunciationDto> result = wordService.getPronunciations(word);
-    assertNotEquals(pronunciations, result);
+    assertNotEquals(pronunciations, wordService.getPronunciations(word));
   }
 
   @Test
@@ -184,8 +176,7 @@ public class WordServiceTest {
 
     when(wordnikClient.getEtymologies(word)).thenReturn(etymologies);
 
-    List<WordEtymologyDto> result = wordService.getEtymologies(word);
-    assertEquals(etymologies, result);
+    assertEquals(etymologies, wordService.getEtymologies(word));
   }
 
   @Test
@@ -200,8 +191,7 @@ public class WordServiceTest {
         new WordEtymologyDto("From New 'tests'.")
     ));
 
-    List<WordEtymologyDto> result = wordService.getEtymologies(word);
-    assertNotEquals(etymologies, result);
+    assertNotEquals(etymologies, wordService.getEtymologies(word));
   }
 
 
@@ -214,8 +204,7 @@ public class WordServiceTest {
 
     when(trie.prefixMap(word)).thenReturn(expectedMap);
 
-    List<String> suggestions = wordService.autocomplete(word);
-    assertEquals(Collections.singletonList(word), suggestions);
+    assertEquals(Collections.singletonList(word), wordService.autocomplete(word));
   }
 
   @Test
@@ -227,7 +216,6 @@ public class WordServiceTest {
 
     when(trie.prefixMap(word)).thenReturn(differentMap);
 
-    List<String> suggestions = wordService.autocomplete(word);
-    assertNotEquals(Collections.singletonList(word), suggestions);
+    assertNotEquals(Collections.singletonList(word), wordService.autocomplete(word));
   }
 }
