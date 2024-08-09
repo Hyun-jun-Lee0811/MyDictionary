@@ -14,7 +14,10 @@ public enum ErrorCode {
   INVALID_JWT_SIGNATURE("잘못된 JWT 서명입니다."),
   EXPIRED_JWT_TOKEN("만료된 JWT 토큰입니다."),
   UNSUPPORTED_JWT_TOKEN("지원되지 않는 JWT 토큰입니다."),
-  INVALID_JWT_TOKEN("JWT 토큰이 잘못되었습니다.");
+  INVALID_JWT_TOKEN("JWT 토큰이 잘못되었습니다."),
+  EXAMPLES_API_CLIENT_ERROR("API 호출 중 클라이언트 오류가 발생했습니다."),
+  EXAMPLES_API_SERVER_ERROR("API 호출 중 서버 오류가 발생했습니다."),
+  EXAMPLES_API_NETWORK_ERROR("API 호출 중 네트워크 오류가 발생했습니다.");
 
   private final String message;
 }
