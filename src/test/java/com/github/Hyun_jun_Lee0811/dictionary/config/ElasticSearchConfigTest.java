@@ -1,4 +1,4 @@
-package com.github.Hyun_jun_Lee0811.dictionary;
+package com.github.Hyun_jun_Lee0811.dictionary.config;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import org.junit.jupiter.api.DisplayName;
