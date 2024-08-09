@@ -18,7 +18,9 @@ public class WordExampleDto {
 
   @Getter
   @Setter
-  private static class ExampleDto {
+  @AllArgsConstructor
+  @NoArgsConstructor
+  public static class ExampleDto {
 
     @JsonProperty("provider")
     private ProviderDto provider;
@@ -53,7 +55,9 @@ public class WordExampleDto {
 
   @Getter
   @Setter
-  private static class ProviderDto {
+  @AllArgsConstructor
+  @NoArgsConstructor
+  public static class ProviderDto {
 
     @JsonProperty("id")
     private Integer id;
