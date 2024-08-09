@@ -12,6 +12,7 @@ import com.github.Hyun_jun_Lee0811.dictionary.model.dto.WordRelatedWordDto;
 import java.net.URI;
 import java.util.Collections;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
@@ -21,16 +22,13 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 @Component
+@RequiredArgsConstructor
 public class WordnikClient {
 
   @Value("${wordnik.api.key}")
   private String apiKey;
 
   private final RestTemplate restTemplate;
-
-  public WordnikClient(RestTemplate restTemplate) {
-    this.restTemplate = restTemplate;
-  }
 
   public List<WordDefinitionDto> getDefinitions(String word) {
     URI uri = UriComponentsBuilder.fromHttpUrl(
