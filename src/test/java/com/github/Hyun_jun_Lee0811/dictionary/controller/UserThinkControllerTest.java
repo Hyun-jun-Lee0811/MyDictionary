@@ -92,7 +92,7 @@ public class UserThinkControllerTest {
     when(userThinkService.isUserAuthenticated("이현준")).thenReturn(true);
     when(userThinkService.getUserThoughts(eq("이현준"), any(Pageable.class))).thenReturn(page);
 
-    mockMvc.perform(get("/user-think/이현준?page=0&size=10")
+    mockMvc.perform(get("/user-think/my-thoughts/이현준?page=0&size=10")
             .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.totalElements").value(2))
