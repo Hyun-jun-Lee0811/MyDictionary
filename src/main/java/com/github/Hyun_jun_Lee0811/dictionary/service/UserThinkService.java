@@ -33,10 +33,8 @@ public class UserThinkService {
   private static final int MAX_USER_THINKS = 100;
 
   public void saveUserThink(UserThinkForm userThinkForm) {
-    if (!isUserAuthenticated(userThinkForm.getUsername())) {
-      throw new ErrorResponse(USER_NOT_AUTHENTICATED);
-    }
 
+    isUserAuthenticated(userThinkForm.getUsername());
     checkUserThinkLimit(getUserIdByUsername(userThinkForm.getUsername()));
 
     userThinkRepository.save(UserThink.builder()
@@ -82,7 +80,7 @@ public class UserThinkService {
   public boolean isUserAuthenticated(String username) {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     if (authentication == null || !authentication.isAuthenticated()) {
-      return false;
+       throw new ErrorResponse(USER_NOT_AUTHENTICATED);
     }
 
     return username.equals(authentication.getName());
