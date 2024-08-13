@@ -208,6 +208,45 @@ class UserThinkServiceTest {
   }
 
   @Test
+  @DisplayName("자신의 생각 변경 성공")
+  void changeUserThink_Success() {
+    User user = new User();
+    user.setUserId(1L);
+    user.setUsername("이현준");
+
+    UserThink think = new UserThink();
+    think.setId(21L);
+    think.setUserId(1L);
+    think.setWord("apple");
+    think.setUserThink("좋아");
+    think.setIsPrivate(false);
+
+    when(userThinkRepository.findById(21L)).thenReturn(Optional.of(think));
+    when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+
+    UserThinkForm form = new UserThinkForm();
+    form.setUsername("이현준");
+    form.setUserThink("변경");
+
+    assertDoesNotThrow(() -> userThinkService.changeUserThink(21L, form));
+
+    verify(userThinkRepository, times(1)).save(any(UserThink.class));
+  }
+
+  @Test
+  @DisplayName("자신의 생각 변경 실패 - 생각 없음")
+  void changeUserThink_Fail_NotFound() {
+    when(userThinkRepository.findById(21L)).thenReturn(Optional.empty());
+
+    UserThinkForm form = new UserThinkForm();
+    form.setUsername("이현준");
+
+    assertThrows(ErrorResponse.class, () -> userThinkService.changeUserThink(21L, form));
+
+    verify(userThinkRepository, never()).save(any(UserThink.class));
+  }
+
+  @Test
   @DisplayName("자신의 생각 삭제 성공")
   void deleteUserThink_Success() {
     User user = new User();
