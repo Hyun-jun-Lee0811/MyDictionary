@@ -108,7 +108,7 @@ public class UserThinkControllerTest {
   public void getUserThoughts_Fail() throws Exception {
     when(userThinkService.isUserAuthenticated("이현준")).thenReturn(false);
 
-    mockMvc.perform(get("/user-think/이현준?page=0&size=10")
+    mockMvc.perform(get("/user-think/my-thoughts/이현준?page=0&size=10")
             .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isForbidden());
 
@@ -174,6 +174,41 @@ public class UserThinkControllerTest {
         .andExpect(status().isInternalServerError());
 
     verify(userThinkService, times(1)).getUserThinksByWord(eq("이도현"), eq("C5097400-1"));
+  }
+
+  @Test
+  @DisplayName("자신의 생각 변경 성공")
+  public void changeUserThink_Success() throws Exception {
+    String jsonContent = "{ "
+        + "\"id\": 21, "
+        + "\"username\": \"이현준\", "
+        + "\"userThink\": \"변경\" }";
+
+    mockMvc.perform(put("/user-think/change-think/21")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(jsonContent))
+        .andExpect(status().isOk());
+
+    verify(userThinkService, times(1)).changeUserThink(eq(21L), any(UserThinkForm.class));
+  }
+
+  @Test
+  @DisplayName("자신의 생각 변경 실패 - 생각 없음")
+  public void changeUserThink_Fail_NotFound() throws Exception {
+    String jsonContent = "{ "
+        + "\"id\": 21, "
+        + "\"username\": \"이현준\", "
+        + "\"userThink\": \"변경\" }";
+
+    doThrow(new ErrorResponse(NO_USERTHINKS_FOUND_OR_ACCESS_DENIED)).when(userThinkService)
+        .changeUserThink(eq(21L), any(UserThinkForm.class));
+
+    mockMvc.perform(put("/user-think/change-think/21")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(jsonContent))
+        .andExpect(status().isNotFound());
+
+    verify(userThinkService, times(1)).changeUserThink(eq(21L), any(UserThinkForm.class));
   }
 
   @Test
