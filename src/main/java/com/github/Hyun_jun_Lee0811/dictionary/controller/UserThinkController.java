@@ -56,6 +56,15 @@ public class UserThinkController {
     return ResponseEntity.ok(userThinkDTOs);
   }
 
+  @PutMapping("/change-think/{id}")
+  public ResponseEntity<Void> changeUserThink(
+      @PathVariable("id") Long id,
+      @RequestBody UserThinkForm userThinkForm) {
+
+    userThinkService.changeUserThink(id, userThinkForm);
+    return ResponseEntity.ok().build();
+  }
+
   @DeleteMapping("/delete/{username}/{id}")
   public ResponseEntity<Void> deleteUserThink(@Valid @PathVariable("username") String username,
       @PathVariable("id") Long id) {

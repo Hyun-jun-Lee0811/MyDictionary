@@ -90,6 +90,23 @@ public class UserThinkService {
     return username.equals(authentication.getName());
   }
 
+  public void changeUserThink(Long id, UserThinkForm userThinkForm) {
+    UserThink findUserThink = userThinkRepository.findById(id)
+        .orElseThrow(() -> new ErrorResponse(NO_USERTHINKS_FOUND_OR_ACCESS_DENIED));
+
+    String findUsername = userRepository.findById(findUserThink.getUserId())
+        .map(User::getUsername)
+        .orElseThrow(() -> new ErrorResponse(USER_NOT_EXIT));
+
+    if (!findUsername.equals(userThinkForm.getUsername())) {
+      throw new ErrorResponse(USER_NOT_AUTHENTICATED);
+    }
+
+    findUserThink.setUserThink(userThinkForm.getUserThink());
+    findUserThink.setUpdatedAt(LocalDateTime.now());
+    userThinkRepository.save(findUserThink);
+  }
+
   public void deleteUserThink(String username, Long id) {
     UserThink userThink = userThinkRepository.findById(id)
         .orElseThrow(() -> new ErrorResponse(NO_USERTHINKS_FOUND_OR_ACCESS_DENIED));
