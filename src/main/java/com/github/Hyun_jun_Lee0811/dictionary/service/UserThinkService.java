@@ -30,28 +30,26 @@ public class UserThinkService {
   private final UserThinkRepository userThinkRepository;
   private final UserRepository userRepository;
   private final WordnikClient wordnikClient;
+  private static final int MAX_USER_THINKS = 100;
 
   public void saveUserThink(UserThinkForm userThinkForm) {
-    if (isUserAuthenticated(userThinkForm.getUsername())) {
+    if (!isUserAuthenticated(userThinkForm.getUsername())) {
       throw new ErrorResponse(USER_NOT_AUTHENTICATED);
     }
 
-    try {
-      userThinkRepository.save(UserThink.builder()
-          .userId(getUserIdByUsername(userThinkForm.toDTO().getUsername()))
-          .wordId(determineWordId(
-              userThinkForm.toDTO(),
-              wordnikClient.getDefinitions(userThinkForm.toDTO().getWord())))
+    checkUserThinkLimit(getUserIdByUsername(userThinkForm.getUsername()));
 
-          .word(userThinkForm.toDTO().getWord())
-          .userThink(userThinkForm.toDTO().getUserThink())
-          .isPrivate(userThinkForm.toDTO().getIsPrivate())
-          .createdAt(LocalDateTime.now())
-          .build());
+    userThinkRepository.save(UserThink.builder()
+        .userId(getUserIdByUsername(userThinkForm.toDTO().getUsername()))
+        .wordId(determineWordId(
+            userThinkForm.toDTO(),
+            wordnikClient.getDefinitions(userThinkForm.toDTO().getWord())))
 
-    } catch (RuntimeException e) {
-      throw new ErrorResponse(FAILED_SAVE);
-    }
+        .word(userThinkForm.toDTO().getWord())
+        .userThink(userThinkForm.toDTO().getUserThink())
+        .isPrivate(userThinkForm.toDTO().getIsPrivate())
+        .createdAt(LocalDateTime.now())
+        .build());
   }
 
   public Page<UserThinkDTO> getUserThoughts(String username, Pageable pageable) {
@@ -120,6 +118,15 @@ public class UserThinkService {
     }
     userThink.setDeletedAt(LocalDateTime.now());
     userThinkRepository.delete(userThink);
+  }
+
+  // 사용자의 UserThink 개수 제한을 확인하는 메서드
+  private void checkUserThinkLimit(Long userId) {
+    long userThinkCount = userThinkRepository.countByUserId(userId);
+
+    if (userThinkCount >= MAX_USER_THINKS) {
+      throw new ErrorResponse(MAX_USER_THINKS_EXCEEDED);
+    }
   }
 
   //사용자 이름을 통해 아이디 가져오는 메서드

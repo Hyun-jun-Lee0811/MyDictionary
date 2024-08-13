@@ -13,4 +13,6 @@ public interface UserThinkRepository extends JpaRepository<UserThink, Long> {
   List<UserThink> findByUserIdAndWordId(Long userId, String wordId);
 
   Page<UserThink> findByUserId(Long userId, Pageable pageable);
+
+  long countByUserId(Long userId);
 }

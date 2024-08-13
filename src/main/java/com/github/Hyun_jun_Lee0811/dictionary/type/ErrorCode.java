@@ -23,6 +23,7 @@ public enum ErrorCode {
   NO_USERTHINKS_FOUND_OR_ACCESS_DENIED("사용자의 생각을 찾을 수 없거나 접근이 거부되었습니다."),
   INVALID_USERNAME("잘못된 사용자 이름 입니다."),
   SERVICE_EXCEPTION("서비스에서 오류가 발생했습니다."),
-  FAILED_SAVE("저장에 실패했습니다");
+  MAX_USER_THINKS_EXCEEDED("사용자가 저장할 수 있는 최대 단어 생각 개수를 초과했습니다.");
+
   private final String message;
 }
