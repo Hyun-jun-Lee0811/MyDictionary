@@ -24,13 +24,13 @@ import org.springframework.data.domain.Pageable;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 class UserThinkServiceTest {
@@ -53,26 +53,27 @@ class UserThinkServiceTest {
   @Test
   @DisplayName("자신의 생각 저장 성공")
   void saveUserThink_success() {
-    Authentication authentication = mock(Authentication.class);
-    when(authentication.getName()).thenReturn("이현준");
-    SecurityContext securityContext = mock(SecurityContext.class);
-    when(securityContext.getAuthentication()).thenReturn(authentication);
-    SecurityContextHolder.setContext(securityContext);
-
-    User user = new User();
-    user.setUserId(1L);
-    when(userRepository.findByUsername("이현준")).thenReturn(Optional.of(user));
-
-    WordDefinitionDto definition = new WordDefinitionDto();
-    definition.setId("C5097400-1");
-    when(wordnikClient.getDefinitions(anyString())).thenReturn(
-        Collections.singletonList(definition));
-
     UserThinkForm userThinkForm = new UserThinkForm();
+    userThinkForm.setUsername("이현준");
     userThinkForm.setWord("apple");
     userThinkForm.setUserThink("good");
     userThinkForm.setIsPrivate(false);
-    userThinkForm.setUsername("이현준");
+
+    User user = new User();
+    user.setUserId(1L);
+    user.setUsername("이현준");
+
+    WordDefinitionDto wordDefinitionDto = new WordDefinitionDto();
+    wordDefinitionDto.setId("A5398300-1");
+
+    when(userRepository.findByUsername("이현준")).thenReturn(Optional.of(user));
+    when(wordnikClient.getDefinitions("apple")).thenReturn(
+        Collections.singletonList(wordDefinitionDto));
+    when(userThinkRepository.countByUserId(1L)).thenReturn(0L);
+
+    UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+        "이현준", null, Collections.emptyList());
+    SecurityContextHolder.getContext().setAuthentication(authentication);
 
     userThinkService.saveUserThink(userThinkForm);
 
