@@ -48,6 +48,7 @@ class UserThinkServiceTest {
   @BeforeEach
   void setUp() {
     MockitoAnnotations.openMocks(this);
+    SecurityContextHolder.clearContext();
   }
 
   @Test
