@@ -9,8 +9,10 @@ import com.github.Hyun_jun_Lee0811.dictionary.model.dto.UserThinkDTO;
 import com.github.Hyun_jun_Lee0811.dictionary.model.dto.WordDefinitionDto;
 import com.github.Hyun_jun_Lee0811.dictionary.model.entity.User;
 import com.github.Hyun_jun_Lee0811.dictionary.model.entity.UserThink;
+import com.github.Hyun_jun_Lee0811.dictionary.model.entity.WordBook;
 import com.github.Hyun_jun_Lee0811.dictionary.repository.UserThinkRepository;
 import com.github.Hyun_jun_Lee0811.dictionary.repository.UserRepository;
+import com.github.Hyun_jun_Lee0811.dictionary.repository.WordBookRepository;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -29,12 +31,14 @@ public class UserThinkService {
 
   private final UserThinkRepository userThinkRepository;
   private final UserRepository userRepository;
+  private final WordBookRepository wordBookRepository;
   private final WordnikClient wordnikClient;
   private static final int MAX_USER_THINKS = 100;
 
   public void saveUserThink(UserThinkForm userThinkForm) {
 
     isUserAuthenticated(userThinkForm.getUsername());
+    Long userId = getUserIdByUsername(userThinkForm.getUsername());
     checkUserThinkLimit(getUserIdByUsername(userThinkForm.getUsername()));
 
     userThinkRepository.save(UserThink.builder()
@@ -48,6 +52,20 @@ public class UserThinkService {
         .isPrivate(userThinkForm.toDTO().getIsPrivate())
         .createdAt(LocalDateTime.now())
         .build());
+    updateWordBook(userId, userThinkForm.getWord(), userThinkForm.getWordId());
+  }
+
+  private void updateWordBook(Long userId, String word, String wordId) {
+    WordBook wordBook = wordBookRepository.findByUserIdAndWord(userId, word)
+        .orElse(WordBook.builder()
+            .userId(userId)
+            .word(word)
+            .wordId(wordId)
+            .createdAt(LocalDateTime.now())
+            .updatedAt(LocalDateTime.now())
+            .build());
+
+    wordBookRepository.save(wordBook);
   }
 
   public Page<UserThinkDTO> getUserThoughts(String username, Pageable pageable) {
@@ -80,7 +98,7 @@ public class UserThinkService {
   public boolean isUserAuthenticated(String username) {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     if (authentication == null || !authentication.isAuthenticated()) {
-       throw new ErrorResponse(USER_NOT_AUTHENTICATED);
+      throw new ErrorResponse(USER_NOT_AUTHENTICATED);
     }
 
     return username.equals(authentication.getName());
