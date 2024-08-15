@@ -23,14 +23,12 @@ public class WordBookService {
   private final UserRepository userRepository;
 
   public List<WordBookDTO> getWordBookByUsernameAndWordId(String username, String wordId) {
-    Long userId = getUserIdByUsername(username);
-    List<UserThink> userThinks = getFilteredUserThinks(userId, wordId);
 
-    if (userThinks.isEmpty()) {
+    if (getFilteredUserThinks(getUserIdByUsername(username), wordId).isEmpty()) {
       throw new ErrorResponse(ErrorCode.NO_USERTHINKS_FOUND_OR_ACCESS_DENIED);
     }
 
-    return convertToWordBookDTO(userThinks);
+    return convertToWordBookDTO(getFilteredUserThinks(getUserIdByUsername(username), wordId));
   }
 
   public boolean isUserAuthenticated(String username) {
