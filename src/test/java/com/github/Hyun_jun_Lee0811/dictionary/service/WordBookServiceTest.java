@@ -8,6 +8,7 @@ import com.github.Hyun_jun_Lee0811.dictionary.model.entity.UserThink;
 import com.github.Hyun_jun_Lee0811.dictionary.repository.UserThinkRepository;
 import com.github.Hyun_jun_Lee0811.dictionary.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -40,6 +41,7 @@ public class WordBookServiceTest {
   }
 
   @Test
+  @DisplayName("단어장 조회 성공")
   public void getWordBookByUsernameAndWordId_Success() {
 
     User user = new User();
@@ -78,6 +80,7 @@ public class WordBookServiceTest {
   }
 
   @Test
+  @DisplayName("단어장 조회 실패")
   void getWordBookByUsernameAndWordId_Fail() {
 
     User user = new User();
