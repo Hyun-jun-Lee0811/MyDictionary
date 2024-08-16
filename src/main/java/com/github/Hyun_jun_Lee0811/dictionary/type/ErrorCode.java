@@ -17,7 +17,13 @@ public enum ErrorCode {
   INVALID_JWT_TOKEN("JWT 토큰이 잘못되었습니다."),
   EXAMPLES_API_CLIENT_ERROR("API 호출 중 클라이언트 오류가 발생했습니다."),
   EXAMPLES_API_SERVER_ERROR("API 호출 중 서버 오류가 발생했습니다."),
-  EXAMPLES_API_NETWORK_ERROR("API 호출 중 네트워크 오류가 발생했습니다.");
+  EXAMPLES_API_NETWORK_ERROR("API 호출 중 네트워크 오류가 발생했습니다."),
+  USER_ID_NOT_PROVIDED("사용자 아이디가 제공되지 않았습니다."),
+  USER_NOT_AUTHENTICATED("인증된 사용자가 아닙니다"),
+  NO_USERTHINKS_FOUND_OR_ACCESS_DENIED("사용자의 생각을 찾을 수 없거나 접근이 거부되었습니다."),
+  INVALID_USERNAME("잘못된 사용자 이름 입니다."),
+  SERVICE_EXCEPTION("서비스에서 오류가 발생했습니다."),
+  MAX_USER_THINKS_EXCEEDED("사용자가 저장할 수 있는 최대 단어 생각 개수를 초과했습니다.");
 
   private final String message;
 }

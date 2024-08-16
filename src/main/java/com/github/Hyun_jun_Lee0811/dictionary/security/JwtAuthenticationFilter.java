@@ -1,10 +1,14 @@
 package com.github.Hyun_jun_Lee0811.dictionary.security;
 
+import static com.github.Hyun_jun_Lee0811.dictionary.type.ErrorCode.USER_NOT_AUTHENTICATED;
+
+import com.github.Hyun_jun_Lee0811.dictionary.expection.ErrorResponse;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
@@ -25,9 +29,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
   @Override
   protected void doFilterInternal(
-      HttpServletRequest request,
-      HttpServletResponse response,
-      FilterChain filterChain) throws ServletException, IOException {
+      @NonNull HttpServletRequest request,
+      @NonNull HttpServletResponse response,
+      @NonNull FilterChain filterChain) throws ServletException, IOException {
 
     String token = resolveToken(request);
     if (StringUtils.hasText(token) && jwtTokenProvider.validateToken(token)) {
@@ -35,6 +39,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
       SecurityContextHolder.getContext().setAuthentication(authentication);
     }
     filterChain.doFilter(request, response);
+  }
+
+  public boolean isUserAuthenticated(String username) {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    if (authentication == null || !authentication.isAuthenticated()) {
+      throw new ErrorResponse(USER_NOT_AUTHENTICATED);
+    }
+
+    return username.equals(authentication.getName());
   }
 
   private String resolveToken(HttpServletRequest request) {
