@@ -36,6 +36,7 @@ public class UserThink {
   private Long userId;
 
   @NotNull
+  @NotBlank(message = "WordId cannot be empty")
   @Column(name = "WORD_ID")
   private String wordId;
 
@@ -49,7 +50,7 @@ public class UserThink {
   private String userThink;
 
   @Column(name = "IS_PRIVATE")
-  private Boolean isPrivate;
+  private Boolean isPrivate = false;
 
   @NotNull
   @Column(name = "CREATED_AT", nullable = false)

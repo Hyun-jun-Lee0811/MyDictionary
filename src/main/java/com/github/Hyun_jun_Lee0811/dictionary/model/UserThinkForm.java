@@ -7,9 +7,11 @@ import lombok.Data;
 
 @Data
 public class UserThinkForm {
+
   @NotBlank(message = "Username cannot be empty")
   private String username;
 
+  @NotBlank(message = "WordId cannot be empty")
   private String wordId;
 
   @NotBlank(message = "Word cannot be empty")
@@ -19,7 +21,7 @@ public class UserThinkForm {
   @Size(max = 1000, message = "User think content must be less than or equal to 1000 characters")
   private String userThink;
 
-  private Boolean isPrivate;
+  private Boolean isPrivate = false;
 
   public UserThinkDTO toDTO() {
     return UserThinkDTO.builder()
