@@ -13,12 +13,11 @@ import com.github.Hyun_jun_Lee0811.dictionary.model.entity.WordBook;
 import com.github.Hyun_jun_Lee0811.dictionary.repository.UserThinkRepository;
 import com.github.Hyun_jun_Lee0811.dictionary.repository.UserRepository;
 import com.github.Hyun_jun_Lee0811.dictionary.repository.WordBookRepository;
+import com.github.Hyun_jun_Lee0811.dictionary.security.JwtAuthenticationFilter;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -33,26 +32,28 @@ public class UserThinkService {
   private final UserRepository userRepository;
   private final WordBookRepository wordBookRepository;
   private final WordnikClient wordnikClient;
+  private final JwtAuthenticationFilter jwtAuthenticationFilter;
   private static final int MAX_USER_THINKS = 100;
 
   public void saveUserThink(UserThinkForm userThinkForm) {
 
-    isUserAuthenticated(userThinkForm.getUsername());
-    Long userId = getUserIdByUsername(userThinkForm.getUsername());
+    jwtAuthenticationFilter.isUserAuthenticated(userThinkForm.getUsername());
     checkUserThinkLimit(getUserIdByUsername(userThinkForm.getUsername()));
 
     userThinkRepository.save(UserThink.builder()
         .userId(getUserIdByUsername(userThinkForm.toDTO().getUsername()))
         .wordId(determineWordId(
             userThinkForm.toDTO(),
-            wordnikClient.getDefinitions(userThinkForm.toDTO().getWord())))
+            wordnikClient.getDefinitions(userThinkForm.getWord())))
 
         .word(userThinkForm.toDTO().getWord())
         .userThink(userThinkForm.toDTO().getUserThink())
         .isPrivate(userThinkForm.toDTO().getIsPrivate())
         .createdAt(LocalDateTime.now())
         .build());
-    updateWordBook(userId, userThinkForm.getWord(), userThinkForm.getWordId());
+
+    updateWordBook(getUserIdByUsername(userThinkForm.getUsername()),
+        userThinkForm.getWord(), userThinkForm.getWordId());
   }
 
   private void updateWordBook(Long userId, String word, String wordId) {
@@ -89,19 +90,10 @@ public class UserThinkService {
     }
 
     return userThinks.stream()
-        .filter(think -> !think.getIsPrivate() || isUserAuthenticated(username))
+        .filter(
+            think -> !think.getIsPrivate() || jwtAuthenticationFilter.isUserAuthenticated(username))
         .map(this::mapToDTO)
         .collect(Collectors.toList());
-  }
-
-  //사용자가 입력한 이름과 토큰 발급 시 사용된 이름과 일치하는지 확인하는 메서드
-  public boolean isUserAuthenticated(String username) {
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    if (authentication == null || !authentication.isAuthenticated()) {
-      throw new ErrorResponse(USER_NOT_AUTHENTICATED);
-    }
-
-    return username.equals(authentication.getName());
   }
 
   public void changeUserThink(Long id, UserThinkForm userThinkForm) {
@@ -125,7 +117,7 @@ public class UserThinkService {
     UserThink userThink = userThinkRepository.findById(id)
         .orElseThrow(() -> new ErrorResponse(NO_USERTHINKS_FOUND_OR_ACCESS_DENIED));
 
-    if (!isUserAuthenticated(username)) {
+    if (!jwtAuthenticationFilter.isUserAuthenticated(username)) {
       throw new ErrorResponse(USER_NOT_AUTHENTICATED);
     }
 

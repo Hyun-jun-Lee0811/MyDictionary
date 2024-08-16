@@ -2,6 +2,7 @@ package com.github.Hyun_jun_Lee0811.dictionary.controller;
 
 import com.github.Hyun_jun_Lee0811.dictionary.model.UserThinkForm;
 import com.github.Hyun_jun_Lee0811.dictionary.model.dto.UserThinkDTO;
+import com.github.Hyun_jun_Lee0811.dictionary.security.JwtAuthenticationFilter;
 import com.github.Hyun_jun_Lee0811.dictionary.service.UserThinkService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -13,13 +14,14 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/user-think")
+@RequestMapping("/user-thinks")
 @RequiredArgsConstructor
 public class UserThinkController {
 
   private final UserThinkService userThinkService;
+  private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
-  @PostMapping("/save")
+  @PostMapping
   public ResponseEntity<Void> saveUserThink(@Valid @RequestBody UserThinkForm userThinkForm) {
 
     userThinkService.saveUserThink(userThinkForm);
@@ -32,7 +34,7 @@ public class UserThinkController {
       @RequestParam(name = "page", defaultValue = "0") int page,
       @RequestParam(name = "size", defaultValue = "10") int size) {
 
-    if (!userThinkService.isUserAuthenticated(username)) {
+    if (!jwtAuthenticationFilter.isUserAuthenticated(username)) {
       return ResponseEntity.status(403).build();
     }
 
@@ -44,16 +46,14 @@ public class UserThinkController {
   public ResponseEntity<List<UserThinkDTO>> getPublicThoughts(
       @Valid @PathVariable("username") String username) {
 
-    List<UserThinkDTO> publicThoughts = userThinkService.getPublicThoughts(username);
-    return ResponseEntity.ok(publicThoughts);
+    return ResponseEntity.ok(userThinkService.getPublicThoughts(username));
   }
 
   @GetMapping("/word/{username}/{wordId}")
   public ResponseEntity<List<UserThinkDTO>> getUserThinksByWord(
       @Valid @PathVariable("username") String username, @PathVariable("wordId") String wordId) {
 
-    List<UserThinkDTO> userThinkDTOs = userThinkService.getUserThinksByWord(username, wordId);
-    return ResponseEntity.ok(userThinkDTOs);
+    return ResponseEntity.ok(userThinkService.getUserThinksByWord(username, wordId));
   }
 
   @PutMapping("/change-think/{id}")
