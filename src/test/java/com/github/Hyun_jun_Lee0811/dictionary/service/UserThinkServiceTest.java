@@ -9,6 +9,7 @@ import com.github.Hyun_jun_Lee0811.dictionary.model.entity.User;
 import com.github.Hyun_jun_Lee0811.dictionary.model.entity.UserThink;
 import com.github.Hyun_jun_Lee0811.dictionary.repository.UserThinkRepository;
 import com.github.Hyun_jun_Lee0811.dictionary.repository.UserRepository;
+import com.github.Hyun_jun_Lee0811.dictionary.security.JwtAuthenticationFilter;
 import java.util.Collections;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -43,6 +44,8 @@ class UserThinkServiceTest {
   @Mock
   private WordnikClient wordnikClient;
   @Mock
+  private JwtAuthenticationFilter jwtAuthenticationFilter;
+  @Mock
   private UserRepository userRepository;
 
   @BeforeEach
@@ -71,6 +74,7 @@ class UserThinkServiceTest {
     when(wordnikClient.getDefinitions("apple")).thenReturn(
         Collections.singletonList(wordDefinitionDto));
     when(userThinkRepository.countByUserId(1L)).thenReturn(0L);
+    when(jwtAuthenticationFilter.isUserAuthenticated("이현준")).thenReturn(true); // 추가
 
     UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
         "이현준", null, Collections.emptyList());
@@ -265,11 +269,9 @@ class UserThinkServiceTest {
 
     when(userRepository.findByUsername("이현준")).thenReturn(Optional.of(user));
     when(userThinkRepository.findById(1L)).thenReturn(Optional.of(think));
+    when(jwtAuthenticationFilter.isUserAuthenticated("이현준")).thenReturn(true);
 
-    UserThinkService spyService = spy(userThinkService);
-    doReturn(true).when(spyService).isUserAuthenticated("이현준");
-
-    assertDoesNotThrow(() -> spyService.deleteUserThink("이현준", 1L));
+    assertDoesNotThrow(() -> userThinkService.deleteUserThink("이현준", 1L));
 
     verify(userThinkRepository, times(1)).delete(any(UserThink.class));
   }

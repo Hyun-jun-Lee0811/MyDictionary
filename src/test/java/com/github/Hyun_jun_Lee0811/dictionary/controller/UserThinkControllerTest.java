@@ -3,6 +3,7 @@ package com.github.Hyun_jun_Lee0811.dictionary.controller;
 import com.github.Hyun_jun_Lee0811.dictionary.expection.ErrorResponse;
 import com.github.Hyun_jun_Lee0811.dictionary.model.UserThinkForm;
 import com.github.Hyun_jun_Lee0811.dictionary.model.dto.UserThinkDTO;
+import com.github.Hyun_jun_Lee0811.dictionary.security.JwtAuthenticationFilter;
 import com.github.Hyun_jun_Lee0811.dictionary.service.UserThinkService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -34,6 +35,9 @@ public class UserThinkControllerTest {
   @InjectMocks
   private UserThinkController userThinkController;
 
+  @Mock
+  private JwtAuthenticationFilter jwtAuthenticationFilter;
+
   private MockMvc mockMvc;
 
   @BeforeEach
@@ -52,7 +56,7 @@ public class UserThinkControllerTest {
         + "\"userThink\": \"good\", "
         + "\"isPrivate\": false }";
 
-    mockMvc.perform(post("/user-think/save")
+    mockMvc.perform(post("/user-thinks")
             .contentType(MediaType.APPLICATION_JSON)
             .content(jsonContent))
         .andExpect(status().isOk());
@@ -73,7 +77,7 @@ public class UserThinkControllerTest {
     doThrow(new ErrorResponse(SERVICE_EXCEPTION)).when(userThinkService)
         .saveUserThink(any(UserThinkForm.class));
 
-    mockMvc.perform(post("/user-think/save")
+    mockMvc.perform(post("/user-thinks")
             .contentType(MediaType.APPLICATION_JSON)
             .content(jsonContent))
         .andExpect(status().isInternalServerError());
@@ -89,30 +93,28 @@ public class UserThinkControllerTest {
 
     Page<UserThinkDTO> page = new PageImpl<>(Arrays.asList(dto1, dto2), PageRequest.of(0, 10), 2);
 
-    when(userThinkService.isUserAuthenticated("이현준")).thenReturn(true);
+    when(jwtAuthenticationFilter.isUserAuthenticated("이현준")).thenReturn(true);
     when(userThinkService.getUserThoughts(eq("이현준"), any(Pageable.class))).thenReturn(page);
 
-    mockMvc.perform(get("/user-think/my-thoughts/이현준?page=0&size=10")
+    mockMvc.perform(get("/user-thinks/my-thoughts/이현준?page=0&size=10")
             .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.totalElements").value(2))
         .andExpect(jsonPath("$.content[0].id").value(18))
         .andExpect(jsonPath("$.content[1].word").value("apple"));
 
-    verify(userThinkService, times(1)).isUserAuthenticated(eq("이현준"));
     verify(userThinkService, times(1)).getUserThoughts(eq("이현준"), any(Pageable.class));
   }
 
   @Test
   @DisplayName("자신의 생각 가져오기 실패")
   public void getUserThoughts_Fail() throws Exception {
-    when(userThinkService.isUserAuthenticated("이현준")).thenReturn(false);
+    when(jwtAuthenticationFilter.isUserAuthenticated("이현준")).thenReturn(false);
 
-    mockMvc.perform(get("/user-think/my-thoughts/이현준?page=0&size=10")
+    mockMvc.perform(get("/user-thinks/my-thoughts/이현준?page=0&size=10")
             .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isForbidden());
 
-    verify(userThinkService, times(1)).isUserAuthenticated(eq("이현준"));
     verify(userThinkService, never()).getUserThoughts(anyString(),
         any(Pageable.class));
   }
@@ -124,7 +126,7 @@ public class UserThinkControllerTest {
     UserThinkDTO dto2 = new UserThinkDTO(16L, "이도현", "C5097400-1", "car", "apppppp", false);
     when(userThinkService.getPublicThoughts(anyString())).thenReturn(Arrays.asList(dto1, dto2));
 
-    mockMvc.perform(get("/user-think/public/이도현")
+    mockMvc.perform(get("/user-thinks/public/이도현")
             .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$[0].username").value("이도현"))
@@ -139,7 +141,7 @@ public class UserThinkControllerTest {
     when(userThinkService.getPublicThoughts(anyString())).thenThrow(
         new ErrorResponse(SERVICE_EXCEPTION));
 
-    mockMvc.perform(get("/user-think/public/이도현")
+    mockMvc.perform(get("/user-thinks/public/이도현")
             .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isInternalServerError());
 
@@ -154,7 +156,7 @@ public class UserThinkControllerTest {
     when(userThinkService.getUserThinksByWord(anyString(), anyString())).thenReturn(
         Arrays.asList(dto1, dto2));
 
-    mockMvc.perform(get("/user-think/word/이도현/C5097400-1")
+    mockMvc.perform(get("/user-thinks/word/이도현/C5097400-1")
             .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$[0].wordId").value("C5097400-1"))
@@ -169,7 +171,7 @@ public class UserThinkControllerTest {
     when(userThinkService.getUserThinksByWord(anyString(), anyString())).thenThrow(
         new ErrorResponse(SERVICE_EXCEPTION));
 
-    mockMvc.perform(get("/user-think/word/이도현/C5097400-1")
+    mockMvc.perform(get("/user-thinks/word/이도현/C5097400-1")
             .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isInternalServerError());
 
@@ -184,7 +186,7 @@ public class UserThinkControllerTest {
         + "\"username\": \"이현준\", "
         + "\"userThink\": \"변경\" }";
 
-    mockMvc.perform(put("/user-think/change-think/21")
+    mockMvc.perform(put("/user-thinks/change-think/21")
             .contentType(MediaType.APPLICATION_JSON)
             .content(jsonContent))
         .andExpect(status().isOk());
@@ -203,7 +205,7 @@ public class UserThinkControllerTest {
     doThrow(new ErrorResponse(NO_USERTHINKS_FOUND_OR_ACCESS_DENIED)).when(userThinkService)
         .changeUserThink(eq(21L), any(UserThinkForm.class));
 
-    mockMvc.perform(put("/user-think/change-think/21")
+    mockMvc.perform(put("/user-thinks/change-think/21")
             .contentType(MediaType.APPLICATION_JSON)
             .content(jsonContent))
         .andExpect(status().isNotFound());
@@ -214,7 +216,7 @@ public class UserThinkControllerTest {
   @Test
   @DisplayName("자신의 생각 삭제 성공")
   public void deleteUserThink_Success() throws Exception {
-    mockMvc.perform(delete("/user-think/delete/이현준/18")
+    mockMvc.perform(delete("/user-thinks/delete/이현준/18")
             .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isNoContent());
 
@@ -227,7 +229,7 @@ public class UserThinkControllerTest {
     doThrow(new ErrorResponse(SERVICE_EXCEPTION)).when(userThinkService)
         .deleteUserThink(anyString(), anyLong());
 
-    mockMvc.perform(delete("/user-think/delete/이현준/18")
+    mockMvc.perform(delete("/user-thinks/delete/이현준/18")
             .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isInternalServerError());
 
