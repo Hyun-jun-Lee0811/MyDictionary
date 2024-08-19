@@ -15,6 +15,8 @@ import com.github.Hyun_jun_Lee0811.dictionary.model.dto.UserDto;
 import com.github.Hyun_jun_Lee0811.dictionary.model.entity.User;
 import com.github.Hyun_jun_Lee0811.dictionary.repository.UserRepository;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -65,7 +67,8 @@ public class UserService {
     //3. 사용자 이름 변경
     user.setUsername(request.getNewUsername());
     User updatedUser = this.userRepository.save(user);
-    return new UserDto(updatedUser.getUserId(), updatedUser.getUsername(), updatedUser.getPassword());
+    return new UserDto(updatedUser.getUserId(), updatedUser.getUsername(),
+        updatedUser.getPassword());
   }
 
   public UserDto changePassword(ChangePassword request) {
@@ -79,7 +82,8 @@ public class UserService {
     user.setPassword(passwordEncoder.encode(request.getNewPassword()));
 
     User updatedUser = this.userRepository.save(user);
-    return new UserDto(updatedUser.getUserId(), updatedUser.getUsername(), updatedUser.getPassword());
+    return new UserDto(updatedUser.getUserId(), updatedUser.getUsername(),
+        updatedUser.getPassword());
   }
 
   public void deleteAccount(DeleteAccount request) {
@@ -94,6 +98,17 @@ public class UserService {
     //3. 계정 삭제
     user.setDeletedAt(LocalDateTime.now());
     this.userRepository.delete(user);
+  }
+
+  public List<UserDto> getAllUsers() {
+    List<UserDto> userDtos = new ArrayList<>();
+
+    for (User user : userRepository.findAll()) {
+      UserDto userDto = new UserDto(user.getUserId(), user.getUsername(), user.getPassword());
+      userDtos.add(userDto);
+    }
+
+    return userDtos;
   }
 
   private Long getCurrentUserId() {

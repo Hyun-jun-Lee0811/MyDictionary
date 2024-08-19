@@ -1,12 +1,15 @@
 package com.github.Hyun_jun_Lee0811.dictionary.controller;
 
 import com.github.Hyun_jun_Lee0811.dictionary.model.UserForm;
+import com.github.Hyun_jun_Lee0811.dictionary.model.dto.UserDto;
 import com.github.Hyun_jun_Lee0811.dictionary.security.JwtTokenProvider;
 import com.github.Hyun_jun_Lee0811.dictionary.service.UserService;
 import jakarta.validation.Valid;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -46,5 +49,10 @@ public class UserController {
   public ResponseEntity<?> deleteAccount(@RequestBody UserForm.DeleteAccount request) {
     userService.deleteAccount(request);
     return ResponseEntity.noContent().build();
+  }
+
+  @GetMapping
+  public ResponseEntity<List<UserDto>> getAllUsers() {
+    return ResponseEntity.ok(userService.getAllUsers());
   }
 }
