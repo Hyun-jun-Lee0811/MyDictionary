@@ -16,6 +16,8 @@ import org.mockito.MockitoAnnotations;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import org.springframework.data.redis.core.HashOperations;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -31,6 +33,12 @@ public class WordBookServiceTest {
   @Mock
   private UserRepository userRepository;
 
+  @Mock
+  private RedisTemplate<String, Long> redisTemplate;
+
+  @Mock
+  private HashOperations<String, Object, Object> hashOperations;
+
   @InjectMocks
   private WordBookService wordBookService;
 
@@ -38,6 +46,7 @@ public class WordBookServiceTest {
   void setUp() {
     MockitoAnnotations.openMocks(this);
     SecurityContextHolder.clearContext();
+    when(redisTemplate.opsForHash()).thenReturn(hashOperations);
   }
 
   @Test
@@ -63,6 +72,7 @@ public class WordBookServiceTest {
     when(mock(Authentication.class).isAuthenticated()).thenReturn(true);
     when(mock(Authentication.class).getName()).thenReturn("이현준");
     when(mock(SecurityContext.class).getAuthentication()).thenReturn(mock(Authentication.class));
+    when(hashOperations.increment(anyString(), anyString(), anyLong())).thenReturn(1L);
 
     SecurityContextHolder.setContext(mock(SecurityContext.class));
 
@@ -90,6 +100,7 @@ public class WordBookServiceTest {
 
     when(userThinkRepository.findByUserIdAndWordIdAndIsPrivate(1L, "A5398300-1", false))
         .thenReturn(Collections.emptyList());
+    when(hashOperations.increment(anyString(), anyString(), anyLong())).thenReturn(1L);
 
     assertThrows(ErrorResponse.class,
         () -> wordBookService.getWordBookByUsernameAndWordId("이현준", "A5398300-1"));
