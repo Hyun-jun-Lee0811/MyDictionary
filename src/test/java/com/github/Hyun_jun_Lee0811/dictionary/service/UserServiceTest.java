@@ -10,6 +10,8 @@ import com.github.Hyun_jun_Lee0811.dictionary.model.UserForm;
 import com.github.Hyun_jun_Lee0811.dictionary.model.dto.UserDto;
 import com.github.Hyun_jun_Lee0811.dictionary.model.entity.User;
 import com.github.Hyun_jun_Lee0811.dictionary.repository.UserRepository;
+import com.github.Hyun_jun_Lee0811.dictionary.type.ErrorCode;
+import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -127,17 +129,17 @@ public class UserServiceTest {
     request.setPassword("password");
 
     User currentUser = new User();
-    currentUser.setUsername("oldUsername");
-    currentUser.setPassword("encodedPassword");
     currentUser.setUserId(1L);
+    currentUser.setUsername("oldUsername");
+    currentUser.setPassword("Password");
+
+    UserDto mockUserDto = new UserDto(1L, "oldUsername", "Password");
+    when(authentication.getPrincipal()).thenReturn(mockUserDto);
 
     when(userRepository.findById(anyLong())).thenReturn(Optional.of(currentUser));
     when(userRepository.existsByUsername(anyString())).thenReturn(false);
     when(passwordEncoder.matches(anyString(), anyString())).thenReturn(true);
     when(userRepository.save(any(User.class))).thenReturn(currentUser);
-
-    // Mock current user
-    when(authentication.getPrincipal()).thenReturn(currentUser);
 
     UserDto result = userService.changeUsername(request);
 
@@ -155,19 +157,18 @@ public class UserServiceTest {
     request.setPassword("wrongPassword");
 
     User currentUser = new User();
-    currentUser.setUsername("oldUsername");
-    currentUser.setPassword("encodedPassword");
     currentUser.setUserId(1L);
+    currentUser.setUsername("oldUsername");
+    currentUser.setPassword("Password");
 
+    when(authentication.getPrincipal()).thenReturn(
+        new UserDto(1L, "oldUsername", "encodedPassword"));
     when(userRepository.findById(anyLong())).thenReturn(Optional.of(currentUser));
     when(passwordEncoder.matches(anyString(), anyString())).thenReturn(false);
 
-    // Mock current user
-    when(authentication.getPrincipal()).thenReturn(currentUser);
-
     ErrorResponse exception = assertThrows(ErrorResponse.class,
         () -> userService.changeUsername(request));
-    assertEquals("비밀번호가 일치하지 않습니다.", exception.getMessage());
+    assertEquals(ErrorCode.PASSWORD_UN_MATCH.getMessage(), exception.getMessage());
   }
 
   @Test
@@ -250,6 +251,37 @@ public class UserServiceTest {
     ErrorResponse exception = assertThrows(ErrorResponse.class,
         () -> userService.deleteAccount(request));
     assertEquals("비밀번호가 일치하지 않습니다.", exception.getMessage());
+  }
+
+  @Test
+  @DisplayName("전체 사용자 조회 성공")
+  void GetAllUsers_Success() {
+    User user1 = new User();
+    user1.setUserId(1L);
+    user1.setUsername("user1");
+    user1.setPassword("password1");
+
+    User user2 = new User();
+    user2.setUserId(2L);
+    user2.setUsername("user2");
+    user2.setPassword("password2");
+
+    when(userRepository.findAll()).thenReturn(List.of(user1, user2));
+    List<UserDto> result = userService.getAllUsers();
+
+    assertNotNull(result);
+    assertEquals(2, result.size());
+    assertEquals("user1", result.get(0).getUsername());
+    assertEquals("user2", result.get(1).getUsername());
+  }
+
+  @Test
+  @DisplayName("전체 사용자 조회 실패 - 사용자 없음")
+  void GetAllUsers_NoUsers() {
+    when(userRepository.findAll()).thenReturn(List.of());
+
+    assertNotNull(userService.getAllUsers());
+    assertTrue(userService.getAllUsers().isEmpty());
   }
 
   @AfterEach
