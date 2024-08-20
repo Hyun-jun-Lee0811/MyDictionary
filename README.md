@@ -42,7 +42,7 @@
 
 **방문자 수 저장 구조**
 - **Redis**
-  - 오늘의 방문자 수를 today_count로 저장하고, 실시간으로 업데이트합니다.
+  - 오늘의 방문자 수를 visitor_counts라는 해시 자료구조로 저장하고, 실시간으로 업데이트합니다.
   - 스케쥴러로 매일 자정에 동기화 작업을 실행하여 데이터 일관성을 유지합니다.
 - **MariaDB**
   - 방문자 수의 총(total_count) 합계를 저장합니다.
@@ -51,7 +51,9 @@
   - 동기화 작업 후 Redis 키는 자동으로 삭제되므로, 방문자 수는 초기화됩니다.
 
 # ERD
-![image](https://github.com/user-attachments/assets/d272a432-f4a6-4f8b-8e6e-d6dd17b198aa)
+![image](https://github.com/user-attachments/assets/38ec80f1-67ee-4523-8db9-7d66640b019f)
+
+
 
 # ElasticSearch 문서구조
 
